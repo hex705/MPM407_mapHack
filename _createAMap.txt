@@ -1,0 +1,110 @@
+The following tutorial was invaluable for figuring this out:
+
+http://tillnagel.com/2011/06/tilemill-for-processing/#static-map
+
+1) Create a static image map for the background.
+
+2) At the time of creation, make sure you record the lat/ long of two diagonal corners (bottom right and top left) as well as and the pixel dimensions of the map image.  in landscape on this nexus7, pixel size --> 1280x736px (yes this solution is platform dependant -- but you can make you map a different size)
+
+for some lat/long details http://en.wikipedia.org/wiki/Longitude
+
+
+NOTE: I made mine with Open Street Map and TileMill (see bottom for details.  You can likely use google maps too.  Remember to get coordinates -- right click the map and then from the context menu click What's here?.  you long / lat will be in the search bar. 
+
+		
+2) Add the Map image to your sketch-- like any other image.
+
+
+3) Using the precision Mercator helper class you can convert lat/long to pixel coordinates -- this complicated because open street maps (and google) use mercator projections -- which are not symmetrical in x and y for all parts of the earth.
+
+Learn about mercator maps here:  http://en.wikipedia.org/wiki/Mercator_projection
+
+
+The original helper class was written by the same person who developed the unfolding library and wrote the initial tutorial I used (link at top).
+http://tillnagel.com/wp-content/uploads/2011/06/MercatorMap.java
+
+The original helper class relies on floats for coordinates -- which is good at low zoom (large area maps). (Processing uses float by default).  If we want to see ourselves walk around --- we need more precision.  The location methods of Ketai return doubles -- so I created the PrecisionMercatorMap helper class.  To support this I needed to change all PVectors (also floats) to a a newly created MapVector which holds doubles.  All trig needed to be altered to use JAVA MATH class as it can handle doubles (processing doesn't).
+
+
+3)  Once All this is in place -- I can take gps coordinates, convert them to properly scaled pixel coordinates and display markers on my own map.
+
+
+
+4) Dynamic markers of my own location can be extracted and plotted with the lat and long returned by ketai onLocationEvent.
+
+
+5) The graphical marker for device location was created in illustrator and is presented with a modified version of the ANIMATION class developed for sprites in processing.
+
+
+6) Last I added a compass that always points north -- so that I can orient myself with respect to the map and earth (top of map is ALWAYS north).  This is a little tricky as turning a compass east requires a different correction than turning the device west.
+
+7) You can go for a walk and the sketch should plot you as you move. 
+
+
+
+TileMill:
+
+How maps work under the hood. 
+
+Maps are stored in massive databases of tiles.  Each tile is a 256x256 px image.  As you zoom into a map it take more and more tiles to cover the same area on earth.  The libraries that manage this are very sophisticated.  No simple interface for processing android exists (yet).
+
+We can however create simple static maps.  IF you only need a map with a single resolution come to me -- if you want to try this out -- here is roughly what I did.
+
+I used this tutorial for an over view:
+
+http://tillnagel.com/2011/06/tilemill-for-processing/#static-map
+
+And this one for tilemill and data details:
+http://mapbox.com/tilemill/docs/guides/osm-bright-mac-quickstart/
+
+And finally this one for the actual data for ontario:
+http://download.geofabrik.de/north-america/canada/ontario.html
+
+
+You need to launch a local postgres server for the map data.  And then run Tilemill -- it will then use that data.
+
+Use tilemill --> extract to set zoom, bounds and pixel dimensions.  Copy these to a file before you finish export.
+
+(you can also extract specific tiles -- but there is no way to manage these easily).
+
+
+Along the way, these also came in handy:
+
+added this:
+http://postgresapp.com/
+
+added this:
+http://dbsgeo.com/downloads/#osm2pgsql
+
+tutorial for getting data on map
+
+http://mapbox.com/blog/mapping-google-doc-spreadsheet/
+
+http://mapbox.com/tilemill/docs/crashcourse/exporting/
+
+
+
+
+Map Data:
+
+RyeBig
+-79.3829,43.6559,-79.3742,43.6602
+1200x820
+zoom 17
+
+rccAndQuad
+-79.3806,43.6577,-79.3764,43.6598
+1200,829
+zoom 18
+
+
+
+
+
+
+
+
+
+
+
+
