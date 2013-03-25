@@ -1,3 +1,7 @@
+
+// updated March 25
+// version 2.0
+
 // integrating geolocation with my map experiment
 //  check your permissions!!
 
@@ -35,6 +39,7 @@ MapVector timsDisplay;
 
 // image for tims
 PImage timsLogo;
+float closeToTims = 30;
 
 // create an ANDROID location to see how close to Tims we are
 Location timsLocation;
@@ -156,7 +161,7 @@ void draw() {
   double distanceToTims = location.getLocation().distanceTo(timsLocation) ;
   
   // see if we are close enough
-  if ( distanceToTims < 10) { // this is meters
+  if ( distanceToTims < closeToTims) { // this is meters
         pushStyle();
             imageMode(CENTER);
             fill( 255, 20, 0, 100 );
@@ -202,27 +207,57 @@ void drawCompass() {
         imageMode(CENTER);
         
         // where we will draw the image
-        translate(width-120,120);
-     
+        translate(width-120,120); 
         float compassAngle = 0;
-        
+         
         // compensate for turning east OR west
         if( compassOrientation > 0 && compassOrientation <=180) {
-            compassAngle = - compassOrientation;
+            compassAngle = - compassOrientation;  
         }
         
         if ( compassOrientation > 180 && compassOrientation <=360) {
-            compassAngle = (360 - compassOrientation );
+            compassAngle = (360 - compassOrientation );         
         }
         
-        rotate(radians( compassAngle-90 ));  // compass points at camera
-        
+        rotate(radians( compassAngle-90 ));  // -90   compass points at camera
         image(compass, 0, 0);
-       
+   
     popStyle();
   popMatrix();
   
-   // place orientation in degrees under compass
+  drawBearing(compassAngle);
+       
+}
+
+
+void drawBearing(float compassAngle){
+  
+  // bearing is the angle from north that youare facing
+          // compass Angle is 0 to -180 N-E-S 
+        // compass Angle is 0 to 180  N-W-S
+        
+        // one more corection to print the bearing properly 
+        // I suspect there is a better way but this works 
+        
+        float compassDisplay=0;
+         if (compassAngle <=0 ) {
+              compassDisplay = abs(compassAngle)+90;   
+              println(compassAngle + "  " +  compassDisplay);
+         }
+         
+         if ( (compassAngle > 0) && (compassAngle <=90) ){
+            compassDisplay = 90-compassAngle;  
+              println(compassAngle + "  " +  compassDisplay);
+         }
+   
+         if ( (compassAngle > 90) && (compassAngle <=180) ){
+            compassDisplay = map(compassAngle,90,180,360,270); 
+              println(compassAngle + "  " +  compassDisplay);
+         }
+   
+  
+   // place bearing in degrees under compass
    fill(255,0,0);
-   text(compassOrientation, width -70, 270);
+   text(  compassDisplay, width -70, 270); 
+  
 }
